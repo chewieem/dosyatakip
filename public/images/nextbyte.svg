@@ -1,0 +1,13 @@
+
+<svg width="300" height="100" viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Sol tarafta stilize "N" harfi -->
+  <g>
+    <polygon points="10,90 10,10 30,10 60,60 60,10 80,10 80,90 60,90 30,40 30,90" fill="#1e3a8a"/>
+  </g>
+
+  <!-- Nextbyte yazısı -->
+  <text x="100" y="70" font-family="Segoe UI, sans-serif" font-size="36" fill="#1e3a8a" font-weight="600">
+    Next
+    <tspan fill="#000000">byte</tspan>
+  </text>
+</svg>
