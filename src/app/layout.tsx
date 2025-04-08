@@ -15,12 +15,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'Nextbyte - Kurumsal Teknoloji Çözümleri',
   description: 'Kurumsal teknoloji çözümleri ve danışmanlık hizmetleri.',
-  icons: {
-    icon: '/images/nextbyte_icon.png',
-    shortcut: '/images/nextbyte_icon.png',
-    apple: '/images/nextbyte_icon.png',
-  },
-  keywords: ["corporate services", "business solutions", "professional services", "consulting", "business support"],
+  icons: [
+    { rel: 'icon', url: '/images/nextbyte_icon.png' },
+    { rel: 'apple-touch-icon', url: '/images/nextbyte_icon.png' },
+  ],
+  keywords: ["kurumsal hizmetler", "teknoloji çözümleri", "danışmanlık", "dijital dönüşüm", "yazılım"],
 };
 
 export default function RootLayout({
