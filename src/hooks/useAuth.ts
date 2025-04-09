@@ -63,6 +63,10 @@ export function useAuth() {
         throw new Error('Hesap aktif değil');
       }
       
+      // Auth token'ı cookie'ye kaydet
+      const token = await result.user.getIdToken();
+      document.cookie = `session=${token}; path=/; max-age=3600; secure; samesite=strict`;
+      
       setUserData(userData);
       return userData;
     } catch (error: any) {
@@ -71,8 +75,16 @@ export function useAuth() {
     }
   };
 
-  const logout = () => {
-    return signOut(auth);
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      // Cookie'yi sil
+      document.cookie = 'session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      setUserData(null);
+    } catch (error: any) {
+      console.error('Logout error:', error);
+      throw new Error(error.message);
+    }
   };
 
   return {
