@@ -55,10 +55,10 @@ export default function Navbar() {
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           <Link
-            href="/#contact"
+            href="/login"
             className="text-sm font-semibold leading-6 px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200 shadow-sm"
           >
-            Hemen Başlayın
+            UYUM360 Giriş
           </Link>
         </div>
       </nav>
