@@ -15,7 +15,7 @@ function classNames(...classes: string[]) {
 
 export default function SettingsPage({ darkMode, onDarkModeChange }: SettingsPageProps) {
   const [fontSize, setFontSize] = useState('normal'); // small, normal, large
-  const [accentColor, setAccentColor] = useState('blue'); // blue, green, purple, red
+
   const [tableDisplay, setTableDisplay] = useState('normal'); // compact, normal, comfortable
   const [itemsPerPage, setItemsPerPage] = useState('10'); // 10, 25, 50, 100
 
@@ -25,12 +25,7 @@ export default function SettingsPage({ darkMode, onDarkModeChange }: SettingsPag
     { value: 'large', label: 'Büyük' }
   ];
 
-  const accentColors = [
-    { value: 'blue', label: 'Mavi', class: 'bg-blue-500' },
-    { value: 'green', label: 'Yeşil', class: 'bg-green-500' },
-    { value: 'purple', label: 'Mor', class: 'bg-purple-500' },
-    { value: 'red', label: 'Kırmızı', class: 'bg-red-500' }
-  ];
+
 
   const tableDisplayOptions = [
     { value: 'compact', label: 'Kompakt' },
@@ -97,25 +92,7 @@ export default function SettingsPage({ darkMode, onDarkModeChange }: SettingsPag
               </select>
             </div>
 
-            {/* Tema Rengi */}
-            <div>
-              <span className="text-sm font-medium text-gray-900 dark:text-white">Tema Rengi</span>
-              <div className="mt-2 flex items-center space-x-3">
-                {accentColors.map((color) => (
-                  <button
-                    key={color.value}
-                    type="button"
-                    className={classNames(
-                      color.class,
-                      'h-8 w-8 rounded-full ring-2 ring-transparent',
-                      accentColor === color.value ? 'ring-2 ring-offset-2' : ''
-                    )}
-                    onClick={() => setAccentColor(color.value)}
-                    title={color.label}
-                  />
-                ))}
-              </div>
-            </div>
+
           </div>
         </div>
 
