@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { User, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } from 'firebase/auth';
+import { User, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, setPersistence, browserLocalPersistence, browserSessionPersistence } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 
@@ -48,7 +48,9 @@ export function useAuth() {
     }
   };
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string, rememberMe: boolean = false) => {
+    // Set persistence based on rememberMe
+    await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
     try {
       // Firebase Authentication ile giriş yap
       const result = await signInWithEmailAndPassword(auth, email, password);

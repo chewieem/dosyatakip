@@ -23,7 +23,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const userData = await login(email, password);
+      const userData = await login(email, password, rememberMe);
       if (userData) {
         router.push('/dashboard');
       }
