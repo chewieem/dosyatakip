@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import NewCustomerModal from '../../../components/NewCustomerModal';
 import DashboardNavbar from '../../../components/DashboardNavbar';
 import { PlusIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 
@@ -91,6 +92,7 @@ const customers: Customer[] = [
 
 export default function CustomersPage() {
   const [activeType, setActiveType] = useState<CustomerType>('all');
+  const [isNewCustomerModalOpen, setIsNewCustomerModalOpen] = useState(false);
   const filteredCustomers = activeType === 'all' ? customers : customers.filter(customer => customer.type === activeType);
 
   const getStatusColor = (status: DocumentStatus): string => {
@@ -152,7 +154,7 @@ export default function CustomersPage() {
                 {/* Aksiyon Butonları */}
                 <div className="flex space-x-2 w-full sm:w-auto">
                   <button
-                    onClick={() => alert('Yeni müşteri ekleme özelliği yakında eklenecek')}
+                    onClick={() => setIsNewCustomerModalOpen(true)}
                     className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
                   >
                     <PlusIcon className="h-5 w-5 mr-2" />
@@ -258,6 +260,10 @@ export default function CustomersPage() {
           </div>
         </div>
       </main>
+      <NewCustomerModal
+        isOpen={isNewCustomerModalOpen}
+        onClose={() => setIsNewCustomerModalOpen(false)}
+      />
     </div>
   );
 }
