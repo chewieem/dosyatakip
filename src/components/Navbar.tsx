@@ -108,11 +108,11 @@ export default function Navbar() {
                 </div>
                 <div className="py-6">
                   <Link
-                    href="/#contact"
+                    href="/login"
                     className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200 text-center shadow-sm"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    Hemen Başlayın
+                    UYUM360 Giriş
                   </Link>
                 </div>
               </div>
