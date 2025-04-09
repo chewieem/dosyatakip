@@ -50,24 +50,28 @@ export function useAuth() {
 
   const login = async (email: string, password: string) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      // Kullanıcı bilgilerini kontrol et
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      const userDoc = await getDoc(doc(db, 'users', result.user.uid));
+      
       if (!userDoc.exists()) {
-        throw new Error('User not found in database');
+        // Kullanıcı Firestore'da yoksa oluştur
+        await setDoc(doc(db, 'users', result.user.uid), {
+          email: result.user.email,
+          name: result.user.displayName || 'Kullanıcı',
+          role: 'user',
+          isActive: true,
+          createdAt: serverTimestamp(),
+        });
+        
+        // Yeni oluşturulan kullanıcıyı getir
+        const newUserDoc = await getDoc(doc(db, 'users', result.user.uid));
+        setUserData(newUserDoc.data());
+      } else {
+        setUserData(userDoc.data());
       }
-
-      const userData = userDoc.data();
-      if (!userData.isActive) {
-        await signOut(auth);
-        throw new Error('Account is disabled');
-      }
-
-      return user;
-    } catch (error) {
-      throw error;
+    } catch (error: any) {
+      console.error('Login error:', error);
+      throw new Error(error.message);
     }
   };
 
