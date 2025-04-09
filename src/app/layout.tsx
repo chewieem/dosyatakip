@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { AuthProvider } from '@/providers/AuthProvider';
+import { ThemeProvider } from '@/context/ThemeContext';
 import "./globals.css";
 
 const inter = Inter({
@@ -17,8 +19,6 @@ export const metadata: Metadata = {
   keywords: ["kurumsal hizmetler", "teknoloji çözümleri", "danışmanlık", "dijital dönüşüm", "yazılım"],
 };
 
-import { ThemeProvider } from '@/context/ThemeContext';
-
 export default function RootLayout({
   children,
 }: {
@@ -26,8 +26,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="tr" className="scroll-smooth">
-      <body className={`${inter.className} antialiased`}>
-        <ThemeProvider>{children}</ThemeProvider>
+      <body className={inter.className}>
+        <AuthProvider>
+          <ThemeProvider>
+            {children}
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );
