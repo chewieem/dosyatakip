@@ -85,9 +85,12 @@ export function useAuth() {
 
   const logout = async () => {
     try {
-      await signOut(auth);
-      // Cookie'yi sil
+      // Önce cookie'yi sil
       document.cookie = 'session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      
+      // Sonra Firebase'den çıkış yap
+      await signOut(auth);
+      
       // State'i temizle
       setUser(null);
       setUserData(null);
