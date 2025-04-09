@@ -23,8 +23,10 @@ export default function Login() {
     setLoading(true);
 
     try {
-      await login(email, password);
-      router.push('/dashboard');
+      const userData = await login(email, password);
+      if (userData) {
+        router.push('/dashboard');
+      }
     } catch (err: any) {
       console.error('Login error:', err);
       setError(err.message || 'Giriş yapılırken bir hata oluştu');

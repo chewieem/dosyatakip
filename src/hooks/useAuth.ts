@@ -54,21 +54,17 @@ export function useAuth() {
       const userDoc = await getDoc(doc(db, 'users', result.user.uid));
       
       if (!userDoc.exists()) {
-        // Kullanıcı Firestore'da yoksa oluştur
-        await setDoc(doc(db, 'users', result.user.uid), {
-          email: result.user.email,
-          name: result.user.displayName || 'Kullanıcı',
-          role: 'user',
-          isActive: true,
-          createdAt: serverTimestamp(),
-        });
-        
-        // Yeni oluşturulan kullanıcıyı getir
-        const newUserDoc = await getDoc(doc(db, 'users', result.user.uid));
-        setUserData(newUserDoc.data());
-      } else {
-        setUserData(userDoc.data());
+        throw new Error('Kullanıcı bilgileri bulunamadı');
       }
+      
+      const userData = userDoc.data();
+      if (!userData.isActive) {
+        await signOut(auth);
+        throw new Error('Hesap aktif değil');
+      }
+      
+      setUserData(userData);
+      return userData;
     } catch (error: any) {
       console.error('Login error:', error);
       throw new Error(error.message);
