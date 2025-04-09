@@ -13,12 +13,12 @@ interface AuthorizedPersonTabProps {
   data: {
     authorizedPersons: AuthorizedPerson[];
   };
-  onChange: (field: string, value: any) => void;
+  onFieldChange: (field: string, value: any) => void;
 }
 
 import { XMarkIcon, PlusIcon } from '@heroicons/react/24/outline';
 
-export default function AuthorizedPersonTab({ data, onChange }: AuthorizedPersonTabProps) {
+export default function AuthorizedPersonTab({ data, onFieldChange }: AuthorizedPersonTabProps) {
   const addNewPerson = () => {
     const newPerson: AuthorizedPerson = {
       id: Date.now().toString(),
@@ -31,7 +31,7 @@ export default function AuthorizedPersonTab({ data, onChange }: AuthorizedPerson
       birthPlace: ''
     };
     
-    onChange('authorizedPersons', [...data.authorizedPersons, newPerson]);
+    onFieldChange('authorizedPersons', [...data.authorizedPersons, newPerson]);
   };
 
   const updatePerson = (personId: string, field: string, value: string) => {
@@ -41,12 +41,12 @@ export default function AuthorizedPersonTab({ data, onChange }: AuthorizedPerson
       }
       return person;
     });
-    onChange('authorizedPersons', updatedPersons);
+    onFieldChange('authorizedPersons', updatedPersons);
   };
 
   const removePerson = (personId: string) => {
     const updatedPersons = data.authorizedPersons.filter(person => person.id !== personId);
-    onChange('authorizedPersons', updatedPersons);
+    onFieldChange('authorizedPersons', updatedPersons);
   };
   return (
     <div className="space-y-6 py-6">

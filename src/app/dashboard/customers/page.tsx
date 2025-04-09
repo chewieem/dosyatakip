@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import NewCustomerModal from '../../../components/NewCustomerModal';
+import EditCustomerModal from '../../../components/EditCustomerModal';
 import DashboardNavbar from '../../../components/DashboardNavbar';
-import { PlusIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, ArrowDownTrayIcon, PencilIcon } from '@heroicons/react/24/outline';
 
 type CustomerType = 'all' | 'corporate' | 'individual' | 'foreign';
 type DocumentStatus = 'valid' | 'warning' | 'expired';
@@ -93,6 +94,11 @@ const customers: Customer[] = [
 export default function CustomersPage() {
   const [activeType, setActiveType] = useState<CustomerType>('all');
   const [isNewCustomerModalOpen, setIsNewCustomerModalOpen] = useState(false);
+  const [editModalData, setEditModalData] = useState<{ isOpen: boolean; customerId: number | null; customerData: any }>({ 
+    isOpen: false, 
+    customerId: null,
+    customerData: null
+  });
   const filteredCustomers = activeType === 'all' ? customers : customers.filter(customer => customer.type === activeType);
 
   const getStatusColor = (status: DocumentStatus): string => {
@@ -193,8 +199,36 @@ export default function CustomersPage() {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredCustomers.map((customer) => (
                     <tr key={customer.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {customer.name}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center justify-between">
+                        <span>{customer.name}</span>
+                        <button
+                          onClick={() => setEditModalData({ 
+                            isOpen: true, 
+                            customerId: customer.id,
+                            customerData: {
+                              customerType: customer.type,
+                              accountNumber: '',
+                              referenceNumber: '',
+                              reference: '',
+                              operationYear: '',
+                              country: '',
+                              city: '',
+                              district: '',
+                              address: '',
+                              phone: '',
+                              email: '',
+                              website: '',
+                              companyName: customer.name,
+                              occupation: '',
+                              taxNumber: '',
+                              authorizedPersons: [],
+                              documents: []
+                            }
+                          })}
+                          className="text-gray-400 hover:text-gray-500"
+                        >
+                          <PencilIcon className="h-5 w-5" />
+                        </button>
                       </td>
                       {activeType === 'all' ? (
                         // Tüm müşteriler görünümü
@@ -264,6 +298,15 @@ export default function CustomersPage() {
         isOpen={isNewCustomerModalOpen}
         onClose={() => setIsNewCustomerModalOpen(false)}
       />
+
+      {editModalData.isOpen && editModalData.customerId && editModalData.customerData && (
+        <EditCustomerModal
+          isOpen={editModalData.isOpen}
+          onClose={() => setEditModalData({ isOpen: false, customerId: null, customerData: null })}
+          customerId={editModalData.customerId}
+          customerData={editModalData.customerData}
+        />
+      )}
     </div>
   );
 }

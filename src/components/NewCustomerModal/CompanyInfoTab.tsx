@@ -4,10 +4,10 @@ interface CompanyInfoTabProps {
     occupation: string;
     taxNumber: string;
   };
-  onChange: (field: string, value: string) => void;
+  onFieldChange: (field: string, value: string) => void;
 }
 
-export default function CompanyInfoTab({ data, onChange }: CompanyInfoTabProps) {
+export default function CompanyInfoTab({ data, onFieldChange }: CompanyInfoTabProps) {
   return (
     <div className="space-y-6 py-6">
       
@@ -22,7 +22,7 @@ export default function CompanyInfoTab({ data, onChange }: CompanyInfoTabProps) 
               name="companyName"
               id="companyName"
               value={data.companyName}
-              onChange={(e) => onChange('companyName', e.target.value)}
+              onChange={(e) => onFieldChange('companyName', e.target.value)}
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
             />
           </div>
@@ -38,7 +38,7 @@ export default function CompanyInfoTab({ data, onChange }: CompanyInfoTabProps) 
               name="occupation"
               id="occupation"
               value={data.occupation}
-              onChange={(e) => onChange('occupation', e.target.value)}
+              onChange={(e) => onFieldChange('occupation', e.target.value)}
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
             />
           </div>
@@ -54,7 +54,7 @@ export default function CompanyInfoTab({ data, onChange }: CompanyInfoTabProps) 
               name="taxNumber"
               id="taxNumber"
               value={data.taxNumber}
-              onChange={(e) => onChange('taxNumber', e.target.value)}
+              onChange={(e) => onFieldChange('taxNumber', e.target.value)}
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
             />
           </div>

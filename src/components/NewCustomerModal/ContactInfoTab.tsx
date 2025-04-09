@@ -8,7 +8,7 @@ interface ContactInfoTabProps {
     email: string;
     website: string;
   };
-  onChange: (field: string, value: string) => void;
+  onFieldChange: (field: string, value: string) => void;
 }
 
 // Örnek veri, gerçek uygulamada API'den gelecek
@@ -16,7 +16,7 @@ const countries = ['Türkiye', 'Amerika Birleşik Devletleri', 'Almanya', 'İngi
 const cities = ['İstanbul', 'Ankara', 'İzmir', 'Bursa', 'Antalya'];
 const districts = ['Kadıköy', 'Beşiktaş', 'Şişli', 'Üsküdar', 'Maltepe'];
 
-export default function ContactInfoTab({ data, onChange }: ContactInfoTabProps) {
+export default function ContactInfoTab({ data, onFieldChange }: ContactInfoTabProps) {
   return (
     <div className="space-y-6 py-6">
       
@@ -30,7 +30,7 @@ export default function ContactInfoTab({ data, onChange }: ContactInfoTabProps) 
               id="country"
               name="country"
               value={data.country}
-              onChange={(e) => onChange('country', e.target.value)}
+              onChange={(e) => onFieldChange('country', e.target.value)}
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
             >
               <option value="">Seçiniz</option>
@@ -52,7 +52,7 @@ export default function ContactInfoTab({ data, onChange }: ContactInfoTabProps) 
               id="city"
               name="city"
               value={data.city}
-              onChange={(e) => onChange('city', e.target.value)}
+              onChange={(e) => onFieldChange('city', e.target.value)}
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
             >
               <option value="">Seçiniz</option>
@@ -74,7 +74,7 @@ export default function ContactInfoTab({ data, onChange }: ContactInfoTabProps) 
               id="district"
               name="district"
               value={data.district}
-              onChange={(e) => onChange('district', e.target.value)}
+              onChange={(e) => onFieldChange('district', e.target.value)}
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
             >
               <option value="">Seçiniz</option>
@@ -97,7 +97,7 @@ export default function ContactInfoTab({ data, onChange }: ContactInfoTabProps) 
               name="address"
               rows={3}
               value={data.address}
-              onChange={(e) => onChange('address', e.target.value)}
+              onChange={(e) => onFieldChange('address', e.target.value)}
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
             />
           </div>
@@ -113,7 +113,7 @@ export default function ContactInfoTab({ data, onChange }: ContactInfoTabProps) 
               name="phone"
               id="phone"
               value={data.phone}
-              onChange={(e) => onChange('phone', e.target.value)}
+              onChange={(e) => onFieldChange('phone', e.target.value)}
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
             />
           </div>
@@ -129,7 +129,7 @@ export default function ContactInfoTab({ data, onChange }: ContactInfoTabProps) 
               name="email"
               id="email"
               value={data.email}
-              onChange={(e) => onChange('email', e.target.value)}
+              onChange={(e) => onFieldChange('email', e.target.value)}
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
             />
           </div>
@@ -145,7 +145,7 @@ export default function ContactInfoTab({ data, onChange }: ContactInfoTabProps) 
               name="website"
               id="website"
               value={data.website}
-              onChange={(e) => onChange('website', e.target.value)}
+              onChange={(e) => onFieldChange('website', e.target.value)}
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
             />
           </div>

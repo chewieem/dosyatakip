@@ -6,10 +6,10 @@ interface GeneralInfoTabProps {
     reference: string;
     operationYear: string;
   };
-  onChange: (field: string, value: string) => void;
+  onFieldChange: (field: string, value: string) => void;
 }
 
-export default function GeneralInfoTab({ data, onChange }: GeneralInfoTabProps) {
+export default function GeneralInfoTab({ data, onFieldChange }: GeneralInfoTabProps) {
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 10 }, (_, i) => currentYear - i);
 
@@ -26,7 +26,7 @@ export default function GeneralInfoTab({ data, onChange }: GeneralInfoTabProps) 
               id="customerType"
               name="customerType"
               value={data.customerType}
-              onChange={(e) => onChange('customerType', e.target.value)}
+              onChange={(e) => onFieldChange('customerType', e.target.value)}
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
             >
               <option value="">Seçiniz</option>
@@ -47,7 +47,7 @@ export default function GeneralInfoTab({ data, onChange }: GeneralInfoTabProps) 
               name="accountNumber"
               id="accountNumber"
               value={data.accountNumber}
-              onChange={(e) => onChange('accountNumber', e.target.value)}
+              onChange={(e) => onFieldChange('accountNumber', e.target.value)}
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
             />
           </div>
@@ -80,7 +80,7 @@ export default function GeneralInfoTab({ data, onChange }: GeneralInfoTabProps) 
               name="reference"
               id="reference"
               value={data.reference}
-              onChange={(e) => onChange('reference', e.target.value)}
+              onChange={(e) => onFieldChange('referenceNumber', e.target.value)}
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
             />
           </div>
@@ -95,7 +95,7 @@ export default function GeneralInfoTab({ data, onChange }: GeneralInfoTabProps) 
               id="operationYear"
               name="operationYear"
               value={data.operationYear}
-              onChange={(e) => onChange('operationYear', e.target.value)}
+              onChange={(e) => onFieldChange('operationYear', e.target.value)}
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
             >
               <option value="">Seçiniz</option>

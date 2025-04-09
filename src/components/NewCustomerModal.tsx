@@ -8,6 +8,7 @@ import GeneralInfoTab from './NewCustomerModal/GeneralInfoTab';
 import ContactInfoTab from './NewCustomerModal/ContactInfoTab';
 import CompanyInfoTab from './NewCustomerModal/CompanyInfoTab';
 import AuthorizedPersonTab from './NewCustomerModal/AuthorizedPersonTab';
+import DocumentUploadTab from './NewCustomerModal/DocumentUploadTab';
 
 interface NewCustomerModalProps {
   isOpen: boolean;
@@ -15,7 +16,7 @@ interface NewCustomerModalProps {
 }
 
 export default function NewCustomerModal({ isOpen, onClose }: NewCustomerModalProps) {
-  const [activeTab, setActiveTab] = useState('general'); // general, contact, company, authorized
+  const [activeTab, setActiveTab] = useState('general'); // general, contact, company, authorized, documents
 
   const [formData, setFormData] = useState<{
     customerType: string;
@@ -50,6 +51,13 @@ export default function NewCustomerModal({ isOpen, onClose }: NewCustomerModalPr
       birthDate: string;
       birthPlace: string;
     }>;
+    // Evrak Bilgileri
+    documentType: string;
+    documentName: string;
+    documentYear: string;
+    isTimeless: boolean;
+    expiryDate: string;
+    file: File | null;
   }>({
     // Genel Bilgiler
     customerType: '',
@@ -89,7 +97,15 @@ export default function NewCustomerModal({ isOpen, onClose }: NewCustomerModalPr
       fatherName: '',
       birthDate: '',
       birthPlace: ''
-    }]
+    }],
+
+    // Evrak Bilgileri
+    documentType: '',
+    documentName: '',
+    documentYear: '',
+    isTimeless: false,
+    expiryDate: '',
+    file: null,
   });
 
   const handleFieldChange = useCallback((field: string, value: any) => {
@@ -186,6 +202,16 @@ export default function NewCustomerModal({ isOpen, onClose }: NewCustomerModalPr
                         >
                           Yetkilendirilmiş Kişiler
                         </button>
+                        <button
+                          onClick={() => setActiveTab('documents')}
+                          className={`${
+                            activeTab === 'documents'
+                              ? 'border-blue-500 text-blue-600'
+                              : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                          } whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium`}
+                        >
+                          Evrak Yükleme
+                        </button>
                       </nav>
                     </div>
 
@@ -200,7 +226,7 @@ export default function NewCustomerModal({ isOpen, onClose }: NewCustomerModalPr
                             reference: formData.reference,
                             operationYear: formData.operationYear
                           }}
-                          onChange={handleFieldChange}
+                          onFieldChange={handleFieldChange}
                         />
                       )}
 
@@ -215,7 +241,7 @@ export default function NewCustomerModal({ isOpen, onClose }: NewCustomerModalPr
                             email: formData.email,
                             website: formData.website
                           }}
-                          onChange={handleFieldChange}
+                          onFieldChange={handleFieldChange}
                         />
                       )}
 
@@ -226,7 +252,7 @@ export default function NewCustomerModal({ isOpen, onClose }: NewCustomerModalPr
                             occupation: formData.occupation,
                             taxNumber: formData.taxNumber
                           }}
-                          onChange={handleFieldChange}
+                          onFieldChange={handleFieldChange}
                         />
                       )}
 
@@ -235,13 +261,26 @@ export default function NewCustomerModal({ isOpen, onClose }: NewCustomerModalPr
                           data={{
                             authorizedPersons: formData.authorizedPersons
                           }}
-                          onChange={handleFieldChange}
+                          onFieldChange={handleFieldChange}
+                        />
+                      )}
+
+                      {activeTab === 'documents' && (
+                        <DocumentUploadTab
+                          data={{
+                            documentType: formData.documentType,
+                            documentName: formData.documentName,
+                            documentYear: formData.documentYear,
+                            isTimeless: formData.isTimeless,
+                            expiryDate: formData.expiryDate,
+                            file: formData.file
+                          }}
+                          onFieldChange={handleFieldChange}
                         />
                       )}
                     </div>
 
-                    {/* Kaydet ve İptal butonları */}
-                    <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                    <div className="mt-5 sm:mt-6">
                       <button
                         type="button"
                         className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
