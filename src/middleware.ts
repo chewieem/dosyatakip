@@ -1,33 +1,40 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { auth } from '@/lib/firebase';
 
 export async function middleware(request: NextRequest) {
-  // Korumalı rotalar
-  const protectedPaths = ['/dashboard'];
+  // Public paths that don't require authentication
+  const publicPaths = ['/login'];
   const path = request.nextUrl.pathname;
 
-  // Login sayfasındaysa ve giriş yapmışsa dashboard'a yönlendir
-  if (path === '/login') {
-    const session = request.cookies.get('session');
-    if (session) {
+  // Check if the current path is public
+  const isPublicPath = publicPaths.includes(path);
+
+  // Get the token from cookies
+  const session = request.cookies.get('session');
+
+  if (isPublicPath) {
+    // If user is on a public path and has a valid session, redirect to dashboard
+    if (session?.value) {
       return NextResponse.redirect(new URL('/dashboard', request.url));
     }
+    return NextResponse.next();
   }
 
-  // Eğer korumalı bir rota ise ve kullanıcı giriş yapmamışsa
-  if (protectedPaths.some(prefix => path.startsWith(prefix))) {
-    const session = request.cookies.get('session');
-    
-    if (!session) {
-      const url = new URL('/login', request.url);
-      url.searchParams.set('from', request.nextUrl.pathname);
-      return NextResponse.redirect(url);
-    }
+  // If user doesn't have a session and tries to access protected route
+  if (!session?.value) {
+    const url = new URL('/login', request.url);
+    url.searchParams.set('from', path);
+    return NextResponse.redirect(url);
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*']
+  matcher: [
+    '/login',
+    '/dashboard',
+    '/dashboard/:path*'
+  ]
 };

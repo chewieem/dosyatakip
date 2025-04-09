@@ -50,24 +50,32 @@ export function useAuth() {
 
   const login = async (email: string, password: string) => {
     try {
+      // Firebase Authentication ile giriş yap
       const result = await signInWithEmailAndPassword(auth, email, password);
-      const userDoc = await getDoc(doc(db, 'users', result.user.uid));
       
+      // Firestore'dan kullanıcı bilgilerini al
+      const userDoc = await getDoc(doc(db, 'users', result.user.uid));
       if (!userDoc.exists()) {
+        await signOut(auth);
         throw new Error('Kullanıcı bilgileri bulunamadı');
       }
       
+      // Kullanıcı durumunu kontrol et
       const userData = userDoc.data();
       if (!userData.isActive) {
         await signOut(auth);
         throw new Error('Hesap aktif değil');
       }
       
-      // Auth token'ı cookie'ye kaydet
-      const token = await result.user.getIdToken();
+      // Auth token'ı al ve cookie'ye kaydet
+      const token = await result.user.getIdToken(true);
       document.cookie = `session=${token}; path=/; max-age=3600; secure; samesite=strict`;
       
+      // State'i güncelle
+      setUser(result.user);
       setUserData(userData);
+      setLoading(false);
+      
       return userData;
     } catch (error: any) {
       console.error('Login error:', error);
@@ -80,7 +88,10 @@ export function useAuth() {
       await signOut(auth);
       // Cookie'yi sil
       document.cookie = 'session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      // State'i temizle
+      setUser(null);
       setUserData(null);
+      setLoading(false);
     } catch (error: any) {
       console.error('Logout error:', error);
       throw new Error(error.message);
