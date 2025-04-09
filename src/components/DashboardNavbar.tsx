@@ -23,7 +23,7 @@ export default function DashboardNavbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 bg-white shadow-sm h-16">
+    <header className="fixed inset-x-0 top-0 z-50 bg-white dark:bg-gray-800 shadow-sm h-16">
       <nav className="flex items-center justify-between p-4 lg:px-8" aria-label="Global">
         <div className="flex lg:flex-1">
           <Link href="/dashboard" className="-m-1.5 p-1.5 flex items-center gap-2">
@@ -40,7 +40,7 @@ export default function DashboardNavbar() {
         <div className="flex lg:hidden">
           <button
             type="button"
-            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
+            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 dark:text-gray-300"
             onClick={() => setMobileMenuOpen(true)}
           >
             <span className="sr-only">Ana menüyü aç</span>
@@ -52,7 +52,7 @@ export default function DashboardNavbar() {
             <Link
               key={item.name}
               href={item.href}
-              className="flex items-center gap-2 text-sm font-semibold leading-6 text-gray-900 hover:text-blue-600 transition-colors duration-200"
+              className="flex items-center gap-2 text-sm font-semibold leading-6 text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
             >
               <item.icon className="h-5 w-5" />
               {item.name}
@@ -62,7 +62,7 @@ export default function DashboardNavbar() {
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           <Link
             href="/login"
-            className="text-sm font-semibold leading-6 text-gray-900 hover:text-blue-600 transition-colors duration-200"
+            className="text-sm font-semibold leading-6 text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
           >
             Çıkış Yap
           </Link>
@@ -72,8 +72,8 @@ export default function DashboardNavbar() {
       {/* Mobile menu */}
       {mobileMenuOpen && (
         <div className="lg:hidden">
-          <div className="fixed inset-0 z-50 bg-white">
-            <div className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6">
+          <div className="fixed inset-0 z-50 bg-white dark:bg-gray-800">
+            <div className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white dark:bg-gray-800 px-6 py-6">
               <div className="flex items-center justify-between">
                 <Link href="/dashboard" className="-m-1.5 p-1.5 flex items-center gap-2">
                   <Image
@@ -87,7 +87,7 @@ export default function DashboardNavbar() {
                 </Link>
                 <button
                   type="button"
-                  className="-m-2.5 rounded-md p-2.5 text-gray-700"
+                  className="-m-2.5 rounded-md p-2.5 text-gray-700 dark:text-gray-300"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <span className="sr-only">Menüyü kapat</span>
