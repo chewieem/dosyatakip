@@ -84,13 +84,13 @@ function CustomerSection({ title, customers, icon: Icon, bgColor }: any) {
 
 export default function Dashboard() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <DashboardNavbar />
       
-      <main className="p-6 lg:p-8 mt-16">
-        <div className="max-w-7xl mx-auto space-y-6">
+      <main className="p-6 lg:p-8 mt-[64px]">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-gray-900 dark:text-white">
           {/* Süresi Yaklaşan Evraklar */}
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
             <div className="px-6 py-4 bg-yellow-600 flex items-center justify-between">
               <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                 <ClockIcon className="h-6 w-6" />

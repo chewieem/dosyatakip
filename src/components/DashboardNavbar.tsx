@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { 
@@ -11,16 +11,23 @@ import {
   Bars3Icon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
+import SettingsModal from './SettingsModal';
 
 const navigation = [
   { name: 'Ana Sayfa', href: '/dashboard', icon: HomeIcon },
   { name: 'Takvim', href: '/dashboard/calendar', icon: CalendarIcon },
   { name: 'Müşteriler', href: '/dashboard/customers', icon: UserGroupIcon },
-  { name: 'Ayarlar', href: '/dashboard/settings', icon: Cog6ToothIcon },
+  { name: 'Ayarlar', href: '#', icon: Cog6ToothIcon },
 ];
 
 export default function DashboardNavbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  const handleSettingsClick = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setSettingsOpen(true);
+  }, []);
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 bg-white dark:bg-gray-800 shadow-sm h-16">
@@ -47,12 +54,13 @@ export default function DashboardNavbar() {
             <Bars3Icon className="h-6 w-6" aria-hidden="true" />
           </button>
         </div>
-        <div className="hidden lg:flex lg:gap-x-8">
+        <div className="hidden lg:flex lg:gap-x-12">
           {navigation.map((item) => (
             <Link
               key={item.name}
               href={item.href}
-              className="flex items-center gap-2 text-sm font-semibold leading-6 text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+              onClick={item.name === 'Ayarlar' ? handleSettingsClick : undefined}
+              className="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-2"
             >
               <item.icon className="h-5 w-5" />
               {item.name}
@@ -68,6 +76,9 @@ export default function DashboardNavbar() {
           </Link>
         </div>
       </nav>
+
+      {/* Settings Modal */}
+      <SettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
@@ -101,11 +112,18 @@ export default function DashboardNavbar() {
                       <Link
                         key={item.name}
                         href={item.href}
-                        className="flex items-center gap-2 -mx-3 rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                        onClick={() => setMobileMenuOpen(false)}
+                        onClick={(e) => {
+                          if (item.name === 'Ayarlar') {
+                            handleSettingsClick(e);
+                            setMobileMenuOpen(false);
+                          }
+                        }}
+                        className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
                       >
-                        <item.icon className="h-6 w-6" />
-                        {item.name}
+                        <div className="flex items-center gap-2">
+                          <item.icon className="h-6 w-6" />
+                          {item.name}
+                        </div>
                       </Link>
                     ))}
                   </div>

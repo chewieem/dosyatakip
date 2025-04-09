@@ -1,15 +1,17 @@
 'use client';
 
 import { useState, Fragment } from 'react';
+import { PlusIcon } from '@heroicons/react/24/outline';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
+import { Calendar, dateFnsLocalizer, View } from 'react-big-calendar';
 import { format } from 'date-fns/format';
 import { parse } from 'date-fns/parse';
 import { startOfWeek } from 'date-fns/startOfWeek';
 import { getDay } from 'date-fns/getDay';
 import { tr } from 'date-fns/locale/tr';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import './calendar.css';
 import DashboardNavbar from '../../../components/DashboardNavbar';
 
 const locales = {
@@ -21,7 +23,9 @@ const localizer = dateFnsLocalizer({
   parse,
   startOfWeek,
   getDay,
-  locales,
+  locales: {
+    'tr': tr,
+  },
 });
 
 // Örnek etkinlikler
@@ -48,6 +52,15 @@ const events = [
   },
 ];
 
+const eventStyleGetter = (event: any) => {
+  return {
+    className: event.type,
+    style: {
+      borderRadius: '4px',
+    }
+  };
+};
+
 const messages = {
   allDay: 'Tüm gün',
   previous: 'Önceki',
@@ -62,6 +75,18 @@ const messages = {
   event: 'Etkinlik',
   noEventsInRange: 'Bu aralıkta etkinlik bulunmuyor.',
   showMore: (total: number) => `+${total} daha fazla`,
+  work_week: 'İş Haftası',
+};
+
+const formats = {
+  monthHeaderFormat: 'MMMM yyyy',
+  dayHeaderFormat: 'dd MMMM yyyy',
+  dayRangeHeaderFormat: ({ start, end }: { start: Date; end: Date }) =>
+    `${format(start, 'dd MMMM', { locale: tr })} - ${format(end, 'dd MMMM', { locale: tr })}`,
+  agendaDateFormat: 'dd MMMM',
+  agendaHeaderFormat: ({ start, end }: { start: Date; end: Date }) =>
+    `${format(start, 'dd MMMM', { locale: tr })} - ${format(end, 'dd MMMM', { locale: tr })}`,
+  weekdayFormat: 'cccc',
 };
 
 interface EventDetailModalProps {
@@ -392,88 +417,99 @@ function NewEventModal({ isOpen, onClose, onSave }: NewEventModalProps) {
 }
 
 export default function CalendarPage() {
-  const [view, setView] = useState('month');
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isNewEventModalOpen, setIsNewEventModalOpen] = useState(false);
   const [calendarEvents, setCalendarEvents] = useState(events);
+  const [view, setView] = useState<View>('month');
+  const [date, setDate] = useState(new Date());
+
+  const handleEventSelect = (event: any) => {
+    setSelectedEvent(event);
+    setIsModalOpen(true);
+  };
 
   // Etkinlik stilini özelleştirme
   const eventStyleGetter = (event: any) => {
-    let style = {
-      backgroundColor: '#3B82F6', // Varsayılan mavi
-      borderRadius: '4px',
-      opacity: 0.8,
+    const baseStyle = {
+      backgroundColor: '#22C55E', // Varsayılan yeşil
       color: 'white',
-      border: 'none',
-      display: 'block',
+      border: '1px solid',
+      borderColor: '#16A34A',
+      borderRadius: '4px',
     };
 
+    let finalStyle = { ...baseStyle };
+
     if (event.type === 'expiry') {
-      style.backgroundColor = '#DC2626'; // Kırmızı
+      finalStyle = {
+        ...baseStyle,
+        backgroundColor: '#DC2626',
+        borderColor: '#B91C1C',
+      };
     } else if (event.type === 'meeting') {
-      style.backgroundColor = '#059669'; // Yeşil
+      finalStyle = {
+        ...baseStyle,
+        backgroundColor: '#2563EB',
+        borderColor: '#1D4ED8',
+      };
     }
 
     return {
-      style,
+      style: finalStyle,
+      className: `calendar-event ${event.type}`
     };
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <DashboardNavbar />
-      
-      <main className="p-6 lg:p-8 mt-16">
+      <main className="p-6 lg:p-8 mt-[64px]">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-semibold text-gray-900">Takvim</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Takvim</h2>
+                <div className="flex flex-wrap gap-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded bg-red-600"></div>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Evrak Son Tarihi</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded bg-blue-600"></div>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Toplantı</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded bg-green-600"></div>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Diğer</span>
+                  </div>
+                </div>
+              </div>
               <button
                 onClick={() => setIsNewEventModalOpen(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
               >
+                <PlusIcon className="h-5 w-5" />
                 Yeni Etkinlik
               </button>
-            </div>
-
-            {/* Renk açıklamaları */}
-            <div className="flex gap-4 mb-6">
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded bg-red-600"></div>
-                <span className="text-sm text-gray-600">Evrak Son Tarihi</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded bg-green-600"></div>
-                <span className="text-sm text-gray-600">Toplantı</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded bg-blue-600"></div>
-                <span className="text-sm text-gray-600">Diğer</span>
-              </div>
             </div>
 
             <div className="h-[700px]">
               <Calendar
                 localizer={localizer}
-                events={calendarEvents}
+                events={events}
                 startAccessor="start"
                 endAccessor="end"
-                style={{ height: '100%' }}
                 messages={messages}
+                formats={formats}
+                culture="tr"
                 eventPropGetter={eventStyleGetter}
-                view={view as any}
-                onView={(newView) => setView(newView)}
-                popup
-                selectable
-                onSelectSlot={(slotInfo) => {
-                  // Yeni etkinlik ekleme modalını aç
-                  console.log('Seçilen zaman aralığı:', slotInfo);
-                }}
-                onSelectEvent={(event) => {
-                  setSelectedEvent(event);
-                  setIsModalOpen(true);
-                }}
+                onSelectEvent={handleEventSelect}
+                style={{ height: 'calc(100vh - 200px)' }}
+                view={view}
+                onView={(newView: View) => setView(newView)}
+                date={date}
+                onNavigate={setDate}
               />
             </div>
           </div>
@@ -489,8 +525,8 @@ export default function CalendarPage() {
       <NewEventModal
         isOpen={isNewEventModalOpen}
         onClose={() => setIsNewEventModalOpen(false)}
-        onSave={(newEvent) => {
-          setCalendarEvents([...calendarEvents, newEvent]);
+        onSave={(event) => {
+          console.log('New event:', event);
           setIsNewEventModalOpen(false);
         }}
       />

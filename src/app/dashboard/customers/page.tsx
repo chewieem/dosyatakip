@@ -114,12 +114,12 @@ export default function CustomersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <DashboardNavbar />
       
-      <main className="p-6 lg:p-8 mt-16">
+      <main className="p-6 lg:p-8 mt-[64px]">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-white rounded-lg shadow-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
             {/* Üst Toolbar */}
             <div className="p-6 border-b border-gray-200">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
