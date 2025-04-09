@@ -44,10 +44,10 @@ export default function Home() {
           </p>
           <div className="flex justify-center gap-x-6 relative z-10">
             <a
-              href="/login"
+              href="/#contact"
               className="rounded-md bg-white px-6 py-3 text-sm font-semibold text-blue-600 shadow-sm hover:bg-blue-50 transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
-              UYUM360 Giriş
+              Hemen Başlayın
             </a>
             <a
               href="/#services"
