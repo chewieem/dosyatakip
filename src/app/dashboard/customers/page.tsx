@@ -4,7 +4,7 @@ import { useState } from 'react';
 import NewCustomerModal from '../../../components/NewCustomerModal';
 import EditCustomerModal from '../../../components/EditCustomerModal';
 import DashboardNavbar from '../../../components/DashboardNavbar';
-import { PlusIcon, ArrowDownTrayIcon, PencilIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, MagnifyingGlassIcon, PencilIcon } from '@heroicons/react/24/outline';
 
 type CustomerType = 'all' | 'corporate' | 'individual' | 'foreign';
 type DocumentStatus = 'valid' | 'warning' | 'expired';
@@ -22,84 +22,71 @@ interface Customer {
   id: number;
   name: string;
   type: CustomerType;
+  referenceNumber: string;
+  accountNumber: string;
   documents: CustomerDocuments;
 }
-
-interface DocumentHeader {
-  key: string;
-  label: string;
-}
-
-type DocumentHeaders = {
-  [K in CustomerType]: DocumentHeader[];
-};
-
-const documentHeaders: DocumentHeaders & { all: DocumentHeader[] } = {
-  all: [
-    { key: 'type', label: 'Müşteri Tipi' },
-    { key: 'mainDocument', label: 'Ana Belge' }
-  ],
-  corporate: [
-    { key: 'vergiLevhasi', label: 'Vergi Levhası' },
-    { key: 'imzaSirkuleri', label: 'İmza Sirküleri' },
-    { key: 'faaliyetBelgesi', label: 'Faaliyet Belgesi' },
-    { key: 'ticaretSicili', label: 'Ticaret Sicili' },
-  ],
-  individual: [
-    { key: 'kimlikKopyasi', label: 'Kimlik Kopyası' },
-    { key: 'ikametgahBelgesi', label: 'İkametgah Belgesi' },
-    { key: 'sabikaBelgesi', label: 'Sabıka Kaydı' },
-  ],
-  foreign: [
-    { key: 'apostille', label: 'Apostil Belge' },
-    { key: 'tercume', label: 'Tercüme' },
-    { key: 'yetkilendirme', label: 'Yetkilendirme' },
-  ],
-};
 
 const customers: Customer[] = [
   {
     id: 1,
     name: 'ABC Teknoloji Ltd. Şti.',
     type: 'corporate',
+    referenceNumber: 'REF001',
+    accountNumber: 'ACC001',
     documents: {
-      vergiLevhasi: { status: 'valid', expiryDate: '2025-12-31' },
-      imzaSirkuleri: { status: 'warning', expiryDate: '2025-06-15' },
-      faaliyetBelgesi: { status: 'expired', expiryDate: '2024-12-31' },
-      ticaretSicili: { status: 'valid', expiryDate: '2026-01-01' },
+      vergiLevhasi: { status: 'valid', expiryDate: '2024-12-31' },
+      imzaSirkuleri: { status: 'warning', expiryDate: '2024-06-15' },
+      faaliyetBelgesi: { status: 'expired', expiryDate: '2024-03-01' },
+      ticaretSicili: { status: 'valid', expiryDate: null }
     }
   },
   {
     id: 2,
-    name: 'John Doe',
+    name: 'Ahmet Yılmaz',
     type: 'individual',
+    referenceNumber: 'REF002',
+    accountNumber: 'ACC002',
     documents: {
       kimlikKopyasi: { status: 'valid', expiryDate: null },
-      ikametgahBelgesi: { status: 'warning', expiryDate: '2025-05-01' },
-      sabikaBelgesi: { status: 'valid', expiryDate: '2025-12-31' },
+      ikametgahBelgesi: { status: 'warning', expiryDate: '2024-07-01' },
+      sabikaBelgesi: { status: 'valid', expiryDate: '2024-12-31' }
     }
   },
   {
     id: 3,
     name: 'Foreign Corp Inc.',
     type: 'foreign',
+    referenceNumber: 'REF003',
+    accountNumber: 'ACC003',
     documents: {
-      apostille: { status: 'valid', expiryDate: '2025-12-31' },
-      tercume: { status: 'warning', expiryDate: '2025-06-01' },
-      yetkilendirme: { status: 'valid', expiryDate: '2026-01-01' },
+      apostille: { status: 'valid', expiryDate: '2024-12-31' },
+      tercume: { status: 'warning', expiryDate: '2024-08-15' },
+      yetkilendirme: { status: 'valid', expiryDate: '2024-12-31' }
     }
-  },
+  }
 ];
 
 export default function CustomersPage() {
-  const [activeType, setActiveType] = useState<CustomerType>('all');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const [selectedType, setSelectedType] = useState<CustomerType>('all');
   const [isNewCustomerModalOpen, setIsNewCustomerModalOpen] = useState(false);
   const [editModalData, setEditModalData] = useState<{ isOpen: boolean; customerId: number | null; customerData: any }>({ 
     isOpen: false, 
     customerId: null,
     customerData: null
   });
-  const filteredCustomers = activeType === 'all' ? customers : customers.filter(customer => customer.type === activeType);
+
+  const filteredCustomers = customers.filter(customer => {
+    const typeMatch = selectedType === 'all' ? true : customer.type === selectedType;
+    const searchMatch = searchTerm === '' ? true :
+      customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer.referenceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer.accountNumber.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    return typeMatch && searchMatch;
+  });
 
   const getStatusColor = (status: DocumentStatus): string => {
     switch (status) {
@@ -109,204 +96,201 @@ export default function CustomersPage() {
         return 'bg-yellow-100 text-yellow-800';
       case 'expired':
         return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const formatDate = (date: string | null): string => {
-    if (!date) return '-';
-    return new Date(date).toLocaleDateString('tr-TR');
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50">
       <DashboardNavbar />
       
-      <main className="p-6 lg:p-8 mt-[64px]">
+      <main className="p-6 lg:p-8 mt-[84px]">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
-            {/* Üst Toolbar */}
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
-                {/* Müşteri Tipleri */}
+          <div className="mb-8">
+            <div className="sm:flex sm:items-center">
+              <div className="sm:flex-auto">
+                <h1 className="text-xl font-semibold text-gray-900">Müşteriler</h1>
+                <p className="mt-2 text-sm text-gray-700">
+                  Tüm müşterilerinizin listesi ve evrak durumları
+                </p>
+              </div>
+              <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+                <button
+                  onClick={() => setIsNewCustomerModalOpen(true)}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  <PlusIcon className="h-5 w-5 mr-2" />
+                  Yeni Müşteri
+                </button>
+              </div>
+            </div>
+
+            {/* Müşteri Tipleri */}
+            <div className="mt-8">
+              <div className="sm:flex sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
                 <div className="flex space-x-2">
                   <button
-                    onClick={() => setActiveType('all')}
-                    className={`px-4 py-2 rounded-md ${activeType === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                    onClick={() => setSelectedType('all')}
+                    className={`px-4 py-2 rounded-md ${selectedType === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                   >
                     Tüm Müşteriler
                   </button>
                   <button
-                    onClick={() => setActiveType('corporate')}
-                    className={`px-4 py-2 rounded-md ${activeType === 'corporate' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                    onClick={() => setSelectedType('corporate')}
+                    className={`px-4 py-2 rounded-md ${selectedType === 'corporate' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                   >
                     Tüzel Müşteri
                   </button>
                   <button
-                    onClick={() => setActiveType('individual')}
-                    className={`px-4 py-2 rounded-md ${activeType === 'individual' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                    onClick={() => setSelectedType('individual')}
+                    className={`px-4 py-2 rounded-md ${selectedType === 'individual' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                   >
                     Bireysel Müşteri
                   </button>
                   <button
-                    onClick={() => setActiveType('foreign')}
-                    className={`px-4 py-2 rounded-md ${activeType === 'foreign' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                    onClick={() => setSelectedType('foreign')}
+                    className={`px-4 py-2 rounded-md ${selectedType === 'foreign' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                   >
                     Yabancı Müşteri
-                  </button>
-                </div>
-
-                {/* Aksiyon Butonları */}
-                <div className="flex space-x-2 w-full sm:w-auto">
-                  <button
-                    onClick={() => setIsNewCustomerModalOpen(true)}
-                    className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
-                  >
-                    <PlusIcon className="h-5 w-5 mr-2" />
-                    Yeni Müşteri
-                  </button>
-                  <button
-                    onClick={() => alert('Dışa aktarma özelliği yakında eklenecek')}
-                    className="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors duration-200"
-                  >
-                    <ArrowDownTrayIcon className="h-5 w-5 mr-2" />
-                    Dışa Aktar
                   </button>
                 </div>
               </div>
             </div>
 
+            {/* Arama Alanı */}
+            <div className="mt-8">
+              <div className="max-w-2xl w-full lg:max-w-xl">
+                <label htmlFor="search" className="sr-only">Ara</label>
+                <div className="relative">
+                  <div className="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center">
+                    <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                  </div>
+                  <input
+                    id="search"
+                    name="search"
+                    className="block w-full rounded-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                    placeholder="Müşteri adı, referans no veya cari hesap no ile ara..."
+                    type="search"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+
             {/* Müşteri Tablosu */}
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Müşteri Adı
-                    </th>
-                    {documentHeaders[activeType].map((header) => (
-                      <th
-                        key={header.key}
-                        scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                      >
-                        {header.label}
+            <div className="mt-8 overflow-x-auto">
+              <div className="inline-block min-w-full align-middle">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th scope="col" className="py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-gray-900">
+                        Müşteri Adı
                       </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredCustomers.map((customer) => (
-                    <tr key={customer.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center justify-between">
-                        <span>{customer.name}</span>
-                        <button
-                          onClick={() => setEditModalData({ 
-                            isOpen: true, 
-                            customerId: customer.id,
-                            customerData: {
-                              customerType: customer.type,
-                              accountNumber: '',
-                              referenceNumber: '',
-                              reference: '',
-                              operationYear: '',
-                              country: '',
-                              city: '',
-                              district: '',
-                              address: '',
-                              phone: '',
-                              email: '',
-                              website: '',
-                              companyName: customer.name,
-                              occupation: '',
-                              taxNumber: '',
-                              authorizedPersons: [],
-                              documents: []
-                            }
-                          })}
-                          className="text-gray-400 hover:text-gray-500"
-                        >
-                          <PencilIcon className="h-5 w-5" />
-                        </button>
-                      </td>
-                      {activeType === 'all' ? (
-                        // Tüm müşteriler görünümü
-                        documentHeaders.all.map((header) => {
-                          if (header.key === 'type') {
-                            return (
-                              <td key={header.key} className="px-6 py-4 whitespace-nowrap text-sm">
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                  {customer.type === 'corporate' ? 'Tüzel' :
-                                   customer.type === 'individual' ? 'Bireysel' :
-                                   'Yabancı'}
-                                </span>
-                              </td>
-                            );
-                          } else if (header.key === 'mainDocument') {
-                            // Her müşteri tipi için ana belgeyi belirle
-                            const mainDocKey = customer.type === 'corporate' ? 'vergiLevhasi' :
-                                              customer.type === 'individual' ? 'kimlikKopyasi' :
-                                              'apostille';
-                            const document = customer.documents[mainDocKey];
-                            return (
-                              <td key={header.key} className="px-6 py-4 whitespace-nowrap text-sm">
-                                <div className="flex items-center">
-                                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(document.status)}`}>
-                                    {document.status === 'valid' ? 'Geçerli' :
-                                     document.status === 'warning' ? 'Yakında Süresi Dolacak' :
-                                     document.status === 'expired' ? 'Süresi Dolmuş' : 'Belirsiz'}
-                                  </span>
-                                  <span className="ml-2 text-gray-500">
-                                    {formatDate(document.expiryDate)}
-                                  </span>
-                                </div>
-                              </td>
-                            );
-                          }
-                          return null;
-                        })
-                      ) : (
-                        // Belirli bir müşteri tipi görünümü
-                        documentHeaders[activeType].map((header) => {
-                          const document = customer.documents[header.key];
-                          return (
-                            <td key={header.key} className="px-6 py-4 whitespace-nowrap text-sm">
-                              <div className="flex items-center">
-                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(document.status)}`}>
-                                  {document.status === 'valid' ? 'Geçerli' :
-                                   document.status === 'warning' ? 'Yakında Süresi Dolacak' :
-                                   document.status === 'expired' ? 'Süresi Dolmuş' : 'Belirsiz'}
-                                </span>
-                                <span className="ml-2 text-gray-500">
-                                  {formatDate(document.expiryDate)}
-                                </span>
-                              </div>
-                            </td>
-                          );
-                        })
-                      )}
+                      <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        Referans No
+                      </th>
+                      <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        Cari Hesap No
+                      </th>
+                      <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        Müşteri Tipi
+                      </th>
+                      <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        Evrak Durumu
+                      </th>
+                      <th scope="col" className="relative py-3.5 pl-3 pr-6">
+                        <span className="sr-only">Düzenle</span>
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {filteredCustomers.map((customer) => (
+                      <tr key={customer.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          <button
+                            onClick={() => window.location.href = `/dashboard/customers/${customer.id}`}
+                            className="text-gray-900 hover:text-blue-600 text-left"
+                          >
+                            {customer.name}
+                          </button>
+                        </td>
+                        <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {customer.referenceNumber}
+                        </td>
+                        <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {customer.accountNumber}
+                        </td>
+                        <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {customer.type === 'corporate' ? 'Kurumsal' : customer.type === 'individual' ? 'Bireysel' : 'Yabancı'}
+                        </td>
+                        <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <div className="flex items-center space-x-2">
+                            {Object.entries(customer.documents).map(([key, doc]) => (
+                              <span
+                                key={key}
+                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(doc.status)}`}
+                                title={`${key}: ${doc.status === 'valid' ? 'Geçerli' : doc.status === 'warning' ? 'Yakında Süresi Dolacak' : 'Süresi Dolmuş'}`}
+                              >
+                                •
+                              </span>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="px-3 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <button
+                            onClick={() => setEditModalData({ 
+                              isOpen: true, 
+                              customerId: customer.id,
+                              customerData: {
+                                customerType: customer.type,
+                                accountNumber: customer.accountNumber,
+                                referenceNumber: customer.referenceNumber,
+                                reference: '',
+                                operationYear: '',
+                                country: '',
+                                city: '',
+                                district: '',
+                                address: '',
+                                phone: '',
+                                email: '',
+                                website: '',
+                                companyName: '',
+                                occupation: '',
+                                taxNumber: '',
+                                authorizedPersons: [],
+                                documents: []
+                              }
+                            })}
+                            className="text-gray-400 hover:text-gray-500"
+                          >
+                            <PencilIcon className="h-5 w-5" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
-      </main>
-      <NewCustomerModal
-        isOpen={isNewCustomerModalOpen}
-        onClose={() => setIsNewCustomerModalOpen(false)}
-      />
 
-      {editModalData.isOpen && editModalData.customerId && editModalData.customerData && (
-        <EditCustomerModal
-          isOpen={editModalData.isOpen}
-          onClose={() => setEditModalData({ isOpen: false, customerId: null, customerData: null })}
-          customerId={editModalData.customerId}
-          customerData={editModalData.customerData}
+        {/* Yeni Müşteri Modalı */}
+        <NewCustomerModal
+          isOpen={isNewCustomerModalOpen}
+          onClose={() => setIsNewCustomerModalOpen(false)}
         />
-      )}
+
+        {/* Müşteri Düzenleme Modalı */}
+        {editModalData.isOpen && editModalData.customerId && (
+          <EditCustomerModal
+            isOpen={editModalData.isOpen}
+            onClose={() => setEditModalData({ isOpen: false, customerId: null, customerData: null })}
+            customerId={editModalData.customerId}
+            customerData={editModalData.customerData}
+          />
+        )}
+      </main>
     </div>
   );
 }
