@@ -178,10 +178,225 @@ function EventDetailModal({ isOpen, onClose, event }: EventDetailModalProps) {
   );
 }
 
+interface NewEventModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (event: any) => void;
+}
+
+function NewEventModal({ isOpen, onClose, onSave }: NewEventModalProps) {
+  const [title, setTitle] = useState('');
+  const [type, setType] = useState('other');
+  const [startDate, setStartDate] = useState('');
+  const [startTime, setStartTime] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [endTime, setEndTime] = useState('');
+  const [isAllDay, setIsAllDay] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const start = isAllDay 
+      ? new Date(startDate)
+      : new Date(startDate + 'T' + (startTime || '00:00'));
+
+    const end = isAllDay
+      ? new Date(endDate || startDate)
+      : new Date((endDate || startDate) + 'T' + (endTime || startTime || '00:00'));
+
+    const newEvent = {
+      title,
+      type,
+      start,
+      end,
+      allDay: isAllDay
+    };
+
+    onSave(newEvent);
+    onClose();
+    
+    // Form alanlarını temizle
+    setTitle('');
+    setType('other');
+    setStartDate('');
+    setStartTime('');
+    setEndDate('');
+    setEndTime('');
+    setIsAllDay(false);
+  };
+
+  return (
+    <Transition appear show={isOpen} as={Fragment}>
+      <Dialog as="div" className="relative z-50" onClose={onClose}>
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-black bg-opacity-25" />
+        </Transition.Child>
+
+        <div className="fixed inset-0 overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
+              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                <div className="flex justify-between items-start">
+                  <Dialog.Title
+                    as="h3"
+                    className="text-lg font-medium leading-6 text-gray-900"
+                  >
+                    Yeni Etkinlik Oluştur
+                  </Dialog.Title>
+                  <button
+                    type="button"
+                    className="rounded-md text-gray-400 hover:text-gray-500 focus:outline-none"
+                    onClick={onClose}
+                  >
+                    <XMarkIcon className="h-6 w-6" />
+                  </button>
+                </div>
+
+                <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+                  <div>
+                    <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+                      Başlık
+                    </label>
+                    <input
+                      type="text"
+                      id="title"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="type" className="block text-sm font-medium text-gray-700">
+                      Tür
+                    </label>
+                    <select
+                      id="type"
+                      value={type}
+                      onChange={(e) => setType(e.target.value)}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    >
+                      <option value="other">Diğer</option>
+                      <option value="expiry">Evrak Son Tarihi</option>
+                      <option value="meeting">Toplantı</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="allDay"
+                      checked={isAllDay}
+                      onChange={(e) => setIsAllDay(e.target.checked)}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor="allDay" className="ml-2 block text-sm text-gray-900">
+                      Tüm Gün
+                    </label>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">
+                        Başlangıç Tarihi
+                      </label>
+                      <input
+                        type="date"
+                        id="startDate"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                        required
+                      />
+                    </div>
+
+                    {!isAllDay && (
+                      <div>
+                        <label htmlFor="startTime" className="block text-sm font-medium text-gray-700">
+                          Başlangıç Saati
+                        </label>
+                        <input
+                          type="time"
+                          id="startTime"
+                          value={startTime}
+                          onChange={(e) => setStartTime(e.target.value)}
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="endDate" className="block text-sm font-medium text-gray-700">
+                        Bitiş Tarihi
+                      </label>
+                      <input
+                        type="date"
+                        id="endDate"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                      />
+                    </div>
+
+                    {!isAllDay && (
+                      <div>
+                        <label htmlFor="endTime" className="block text-sm font-medium text-gray-700">
+                          Bitiş Saati
+                        </label>
+                        <input
+                          type="time"
+                          id="endTime"
+                          value={endTime}
+                          onChange={(e) => setEndTime(e.target.value)}
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mt-6">
+                    <button
+                      type="submit"
+                      className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                      Etkinlik Oluştur
+                    </button>
+                  </div>
+                </form>
+              </Dialog.Panel>
+            </Transition.Child>
+          </div>
+        </div>
+      </Dialog>
+    </Transition>
+  );
+}
+
 export default function CalendarPage() {
   const [view, setView] = useState('month');
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isNewEventModalOpen, setIsNewEventModalOpen] = useState(false);
+  const [calendarEvents, setCalendarEvents] = useState(events);
 
   // Etkinlik stilini özelleştirme
   const eventStyleGetter = (event: any) => {
@@ -215,7 +430,7 @@ export default function CalendarPage() {
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-semibold text-gray-900">Takvim</h2>
               <button
-                onClick={() => {/* Yeni etkinlik ekleme modalını aç */}}
+                onClick={() => setIsNewEventModalOpen(true)}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
               >
                 Yeni Etkinlik
@@ -241,7 +456,7 @@ export default function CalendarPage() {
             <div className="h-[700px]">
               <Calendar
                 localizer={localizer}
-                events={events}
+                events={calendarEvents}
                 startAccessor="start"
                 endAccessor="end"
                 style={{ height: '100%' }}
@@ -269,6 +484,15 @@ export default function CalendarPage() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         event={selectedEvent}
+      />
+
+      <NewEventModal
+        isOpen={isNewEventModalOpen}
+        onClose={() => setIsNewEventModalOpen(false)}
+        onSave={(newEvent) => {
+          setCalendarEvents([...calendarEvents, newEvent]);
+          setIsNewEventModalOpen(false);
+        }}
       />
     </div>
   );
