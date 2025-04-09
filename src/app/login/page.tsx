@@ -19,7 +19,7 @@ export default function Login() {
     // Örnek kontrol
     if (username && password) {
       // Başarılı giriş sonrası ana sayfaya yönlendirme
-      router.push('/');
+      router.push('/dashboard');
     }
   };
 
