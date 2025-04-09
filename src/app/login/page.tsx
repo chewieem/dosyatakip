@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthContext } from '@/providers/AuthProvider';
+import { auth } from '@/lib/firebase';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -14,7 +15,7 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { login } = useAuth();
+  const { login } = useAuthContext();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +26,7 @@ export default function Login() {
       await login(email, password);
       router.push('/dashboard');
     } catch (err: any) {
+      console.error('Login error:', err);
       setError(err.message || 'Giriş yapılırken bir hata oluştu');
     } finally {
       setLoading(false);

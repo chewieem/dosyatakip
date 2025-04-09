@@ -1,25 +1,27 @@
 import { useState, useEffect } from 'react';
-import { 
-  User,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged
-} from 'firebase/auth';
+import { User, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
+  const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      setUser(user);
+      
       if (user) {
-        setUser(user);
+        // Firestore'dan kullanıcı verilerini al
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userDoc.exists()) {
+          setUserData(userDoc.data());
+        }
       } else {
-        setUser(null);
+        setUserData(null);
       }
+      
       setLoading(false);
     });
 
