@@ -1,4 +1,4 @@
-import { google } from 'googleapis';
+import { google, drive_v3 } from 'googleapis';
 import { OAuth2Client } from 'google-auth-library';
 
 // Bu bilgileri Google Cloud Console'dan alacaksınız
@@ -24,14 +24,18 @@ const drive = google.drive({
   auth: oauth2Client,
 });
 
-export const uploadFile = async (file: File, customerId: string, documentType: string) => {
+export const uploadFile = async (file: Express.Multer.File, customerId: string, documentType: string) => {
   try {
     // Müşteri için klasör oluştur veya var olanı bul
     const folderName = `customer_${customerId}`;
-    const folderMetadata = {
+    if (!process.env.GOOGLE_DRIVE_PARENT_FOLDER_ID) {
+      throw new Error('GOOGLE_DRIVE_PARENT_FOLDER_ID is not defined');
+    }
+
+    const folderMetadata: drive_v3.Schema$File = {
       name: folderName,
       mimeType: 'application/vnd.google-apps.folder',
-      parents: [process.env.GOOGLE_DRIVE_PARENT_FOLDER_ID] // Ana klasör ID'si
+      parents: [process.env.GOOGLE_DRIVE_PARENT_FOLDER_ID]
     };
 
     let folderId;
@@ -51,14 +55,18 @@ export const uploadFile = async (file: File, customerId: string, documentType: s
     }
 
     // Dosyayı yükle
-    const fileMetadata = {
+    if (!folderId) {
+      throw new Error('Could not create or find folder');
+    }
+
+    const fileMetadata: drive_v3.Schema$File = {
       name: `${documentType}_${new Date().toISOString()}`,
       parents: [folderId],
     };
 
     const media = {
-      mimeType: file.type,
-      body: file,
+      mimeType: file.mimetype,
+      body: file.buffer,
     };
 
     const response = await drive.files.create({

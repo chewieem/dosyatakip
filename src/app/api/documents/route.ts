@@ -1,12 +1,27 @@
 import { NextResponse } from 'next/server';
+import multer from 'multer';
+import { Readable } from 'stream';
 import { uploadFile, deleteFile, getFileList } from '@/utils/googleDrive';
+
+const upload = multer();
 
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
-    const file = formData.get('file') as File;
+    const fileData = formData.get('file') as File;
     const customerId = formData.get('customerId') as string;
     const documentType = formData.get('documentType') as string;
+
+    // File'ı Buffer'a çevir
+    const fileBuffer = await fileData.arrayBuffer();
+    const file = {
+      fieldname: 'file',
+      originalname: fileData.name,
+      encoding: '7bit',
+      mimetype: fileData.type,
+      buffer: Buffer.from(fileBuffer),
+      size: fileData.size
+    } as Express.Multer.File;
 
     if (!file || !customerId || !documentType) {
       return NextResponse.json(
